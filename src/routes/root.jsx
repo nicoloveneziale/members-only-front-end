@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link, useLocation } from "react-router-dom";
 import { Outlet } from "react-router-dom";
-import { timeAgo } from "../utils/timeAgo";
+import Message from "../components/messageComponent";
 
 export default function Root() {
   const { token, logout } = useAuth();
@@ -106,39 +106,7 @@ export default function Root() {
         {location.pathname === "/" && (
           <div className="grid gap-6">
             {messages.map((message) => (
-              <div
-                key={message.id}
-                className="bg-white p-6 rounded-lg shadow-md"
-              >
-                <h3 className="text-lg font-bold">{message.title}</h3>
-                <p className="mt-2">{message.text}</p>
-
-                {user && user.membership_status !== null && (
-                  <div className="text-sm text-gray-500 mt-3">
-                    <span>{timeAgo(message.date)}</span> ·{" "}
-                    <span>
-                      Posted by {message.users.username}
-                      {message.users.membership_status ? " (member)" : ""}
-                    </span>
-                  </div>
-                )}
-
-                {user && (
-                  <form
-                    method="POST"
-                    action={`/messages/${message.id}/like`}
-                    className="mt-2"
-                    onSubmit={(e) => e.preventDefault()}
-                  >
-                    <button
-                      type="submit"
-                      className="text-red-500 hover:underline"
-                    >
-                      ❤️ Like ({message._count?.likedBy || 0})
-                    </button>
-                  </form>
-                )}
-              </div>
+              <Message key={message.id} message={message} user={user} />
             ))}
           </div>
         )}
