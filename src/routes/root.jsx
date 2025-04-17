@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link, useLocation } from "react-router-dom";
 import { Outlet } from "react-router-dom";
+import { timeAgo } from "../utils/timeAgo";
 
 export default function Root() {
   const { token, logout } = useAuth();
