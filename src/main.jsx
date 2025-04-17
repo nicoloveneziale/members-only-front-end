@@ -8,7 +8,8 @@ import { AuthProvider } from "./context/AuthContext";
 import Root from "./routes/root";
 import ErrorPage from "./routes/errorPage";
 import Login from "./routes/loginPage";
-import Register from "./routes/loginPage";
+import Register from "./routes/registerPage";
+import Join from "./routes/joinPage";
 
 const router = createBrowserRouter([
   {
@@ -24,13 +25,13 @@ const router = createBrowserRouter([
         path: "register",
         element: <Register />,
       },
-      /*{
+      {
         path: "join",
         element: <Join />,
       },
-      {
-        path: "message",
-        element: <Message />,
+      /*{
+        path: "message/create",
+        element: <MessageForm />,
       },*/
     ],
   },
