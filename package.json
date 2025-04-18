@@ -47,5 +47,6 @@
     "tailwindcss": "^3.4.17",
     "vite": "^6.0.5",
     "vitest": "^3.1.1"
-  }
+  },
+  "keywords": []
 }

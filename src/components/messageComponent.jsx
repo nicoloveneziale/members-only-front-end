@@ -5,6 +5,7 @@ import { timeAgo } from "../utils/timeAgo";
 export default function Message({ message, user }) {
   const { token } = useAuth();
   const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(message._count?.likedBy || 0);
 
   useEffect(() => {
     if (!token) return;
@@ -35,6 +36,7 @@ export default function Message({ message, user }) {
 
       if (response.ok) {
         setLiked(!liked);
+        setLikeCount((prev) => prev + (liked ? -1 : 1));
       } else {
         alert("Unable to like");
       }
@@ -61,7 +63,7 @@ export default function Message({ message, user }) {
       {user && (
         <form onSubmit={handleLike}>
           <button type="submit" className="text-red-500 hover:underline">
-            {liked ? "💔 Unlike" : "❤️ Like"} ({message._count?.likedBy || 0})
+            {liked ? "💔 Unlike" : "❤️ Like"} ({likeCount})
           </button>
         </form>
       )}
