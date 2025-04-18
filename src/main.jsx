@@ -10,6 +10,7 @@ import ErrorPage from "./routes/errorPage";
 import Login from "./routes/loginPage";
 import Register from "./routes/registerPage";
 import Join from "./routes/joinPage";
+import MessageForm from "./routes/messageForm";
 
 const router = createBrowserRouter([
   {
@@ -29,10 +30,10 @@ const router = createBrowserRouter([
         path: "join",
         element: <Join />,
       },
-      /*{
-        path: "message/create",
+      {
+        path: "messages/create",
         element: <MessageForm />,
-      },*/
+      },
     ],
   },
 ]);

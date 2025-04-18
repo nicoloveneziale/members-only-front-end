@@ -1,38 +1,31 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-export default function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const { login } = useAuth();
+export default function MessageForm() {
+  const [title, setTitle] = useState("");
+  const [text, setText] = useState("");
+  const { token } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/login", {
+      const response = await fetch("http://localhost:8080/messages/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ title, text }),
       });
-
       if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem("token", data.token);
-        login(data.token);
         navigate("/");
-      } else {
-        console.error("Login failed:", response.status);
-        alert("Invalid username or password.");
       }
     } catch (error) {
-      console.error("Login error:", error);
-      alert("An error occurred during login.");
+      console.error("Error creating message:", error);
+      alert("Failed to create message. Please try again.");
     }
   };
 
@@ -41,63 +34,52 @@ export default function Login() {
       <div className="max-w-md mx-auto bg-white shadow-md rounded-lg overflow-hidden">
         <div className="px-6 py-8">
           <h1 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-            Log In
+            Create a New Post
           </h1>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label
-                htmlFor="username"
+                htmlFor="title"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                Username
+                Title
               </label>
               <input
-                id="username"
-                name="username"
+                id="title"
+                name="title"
                 type="text"
-                placeholder="Enter your username"
+                placeholder="Enter your post title"
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 required
               />
             </div>
             <div>
               <label
-                htmlFor="password"
+                htmlFor="text"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                Password
+                Message Text
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Enter your password"
+              <textarea
+                id="text"
+                name="text"
+                rows="4"
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Write your message here..."
+                value={text}
+                onChange={(e) => setText(e.target.value)}
                 required
-              />
+              ></textarea>
             </div>
             <button
               type="submit"
               className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-md focus:outline-none focus:shadow-outline w-full transition duration-300 ease-in-out"
             >
-              Log In
+              Post Message
             </button>
           </form>
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Don't have an account?
-              <Link
-                to="/register"
-                className="text-indigo-500 hover:text-indigo-700 font-medium ml-1 transition duration-200"
-              >
-                Register
-              </Link>
-            </p>
-          </div>
         </div>
       </div>
     </div>
