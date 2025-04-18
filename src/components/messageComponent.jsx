@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { timeAgo } from "../utils/timeAgo";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaTrash } from "react-icons/fa";
 
 export default function Message({ message, user }) {
   const { token } = useAuth();
@@ -48,6 +48,32 @@ export default function Message({ message, user }) {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/messages/${message.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: {
+            user: user,
+          },
+        },
+      );
+
+      if (response.ok) {
+        console.log("deleted");
+      } else {
+        console.log(response);
+        alert("Unable to delete");
+      }
+    } catch (error) {
+      alert("An error occurred");
+    }
+  };
+
   return (
     <div
       key={message.id}
@@ -58,7 +84,15 @@ export default function Message({ message, user }) {
           {message.title}
         </h3>
         <p className="mt-2 text-gray-700 line-clamp-3">{message.text}</p>
-
+        {message.image && (
+          <div className="mt-4">
+            <img
+              src={`http://localhost:8080/${message.image}`}
+              alt="Message"
+              className="max-w-full h-auto rounded-md shadow-md"
+            />
+          </div>
+        )}
         {user?.membership_status && (
           <div className="mt-4 flex items-center justify-between">
             <div className="text-sm text-gray-500">
@@ -77,20 +111,32 @@ export default function Message({ message, user }) {
         )}
 
         {user && (
-          <button
-            onClick={handleLike}
-            className={`flex items-center text-red-500 hover:text-red-600 focus:outline-none transition-colors duration-200 ${
-              liked ? "font-semibold" : ""
-            }`}
-          >
-            {liked ? (
-              <FaHeart className="mr-2" />
-            ) : (
-              <FaRegHeart className="mr-2" />
+          <div className="mt-4 flex justify-between items-center">
+            <button
+              onClick={handleLike}
+              className={`flex items-center text-red-500 hover:text-red-600 focus:outline-none transition-colors duration-200 ${
+                liked ? "font-semibold" : ""
+              }`}
+            >
+              {liked ? (
+                <FaHeart className="mr-2" />
+              ) : (
+                <FaRegHeart className="mr-2" />
+              )}
+              <span>{liked ? "Unlike" : "Like"}</span>
+              <span className="ml-1 text-gray-600">({likeCount})</span>
+            </button>
+
+            {user.id === message.author_id && (
+              <button
+                onClick={handleDelete}
+                className="flex items-center text-red-600 hover:text-red-700 focus:outline-none transition-colors duration-200"
+              >
+                <FaTrash className="mr-2" />
+                <span>Delete</span>
+              </button>
             )}
-            <span>{liked ? "Unlike" : "Like"}</span>
-            <span className="ml-1 text-gray-600">({likeCount})</span>
-          </button>
+          </div>
         )}
       </div>
     </div>

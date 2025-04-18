@@ -5,20 +5,27 @@ import { useNavigate } from "react-router-dom";
 export default function MessageForm() {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
+  const [image, setImage] = useState(null);
   const { token } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("text", text);
+    if (image) {
+      formData.append("image", image);
+    }
+
     try {
       const response = await fetch("http://localhost:8080/messages/create", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ title, text }),
+        body: formData,
       });
       if (response.ok) {
         navigate("/");
@@ -72,6 +79,22 @@ export default function MessageForm() {
                 onChange={(e) => setText(e.target.value)}
                 required
               ></textarea>
+            </div>
+            <div>
+              <label
+                htmlFor="image"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
+                Add Image
+              </label>
+              <input
+                id="image"
+                name="image"
+                type="file"
+                accept="image/*"
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                onChange={(e) => setImage(e.target.files[0])}
+              />
             </div>
             <button
               type="submit"
