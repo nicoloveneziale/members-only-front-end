@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useMessages } from "../context/MessageContext";
 import { timeAgo } from "../utils/timeAgo";
 import { FaHeart, FaRegHeart, FaTrash } from "react-icons/fa";
 
-export default function Message({ message, user }) {
+export default function Message({ message, user, onDelete }) {
   const { token } = useAuth();
+  const { deleteMessage } = useMessages();
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(message._count?.likedBy || 0);
 
@@ -42,32 +44,6 @@ export default function Message({ message, user }) {
         setLikeCount((prev) => prev + (liked ? -1 : 1));
       } else {
         alert("Unable to like");
-      }
-    } catch (error) {
-      alert("An error occurred");
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/messages/${message.id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: {
-            user: user,
-          },
-        },
-      );
-
-      if (response.ok) {
-        console.log("deleted");
-      } else {
-        console.log(response);
-        alert("Unable to delete");
       }
     } catch (error) {
       alert("An error occurred");
@@ -129,7 +105,7 @@ export default function Message({ message, user }) {
 
             {user.id === message.author_id && (
               <button
-                onClick={handleDelete}
+                onClick={() => deleteMessage(message.id, user)}
                 className="flex items-center text-red-600 hover:text-red-700 focus:outline-none transition-colors duration-200"
               >
                 <FaTrash className="mr-2" />

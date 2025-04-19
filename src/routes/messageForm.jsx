@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useMessages } from "../context/MessageContext";
 import { useNavigate } from "react-router-dom";
 
 export default function MessageForm() {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
+  const { addMessage } = useMessages();
   const { token } = useAuth();
   const navigate = useNavigate();
 
@@ -28,6 +30,8 @@ export default function MessageForm() {
         body: formData,
       });
       if (response.ok) {
+        const newMessage = (await response.json()).data;
+        addMessage(newMessage);
         navigate("/");
       }
     } catch (error) {

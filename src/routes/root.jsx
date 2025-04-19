@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useMessages } from "../context/MessageContext";
 import { Link, useLocation } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import Message from "../components/messageComponent";
@@ -14,10 +15,14 @@ import {
 
 export default function Root() {
   const { token, logout } = useAuth();
+  const { messages, fetchMessages, deleteMessage, loading } = useMessages();
   const [user, setUser] = useState(null);
-  const [messages, setMessages] = useState([]);
   const [sortBy, setSortBy] = useState("new");
   const location = useLocation();
+
+  useEffect(() => {
+    fetchMessages(sortBy);
+  }, [sortBy]);
 
   // Fetch user info
   useEffect(() => {
@@ -31,15 +36,6 @@ export default function Root() {
       .then((res) => res.json())
       .then((data) => setUser(data.user));
   }, [token]);
-
-  // Fetch messages
-  useEffect(() => {
-    fetch(`http://localhost:8080/messages/${sortBy}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setMessages(data);
-      });
-  }, [sortBy]);
 
   // Log Out
   const handleLogout = () => {
