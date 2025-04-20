@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useMessages } from "../context/MessageContext";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import Message from "../components/messageComponent";
 import {
@@ -19,6 +19,7 @@ export default function Root() {
   const [user, setUser] = useState(null);
   const [sortBy, setSortBy] = useState("new");
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchMessages(sortBy);
@@ -40,6 +41,7 @@ export default function Root() {
   // Log Out
   const handleLogout = () => {
     logout();
+    navigate("/");
   };
 
   return (

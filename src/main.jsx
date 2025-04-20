@@ -12,6 +12,7 @@ import Login from "./routes/loginPage";
 import Register from "./routes/registerPage";
 import Join from "./routes/joinPage";
 import MessageForm from "./routes/messageForm";
+import ProfileForm from "./routes/profileForm";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: "messages/create",
         element: <MessageForm />,
+      },
+      {
+        path: "profile/edit",
+        element: <ProfileForm />,
       },
     ],
   },

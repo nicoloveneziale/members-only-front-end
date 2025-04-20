@@ -24,8 +24,9 @@ export default function Register() {
 
       if (response.ok) {
         const data = await response.json();
+        console.log(data);
         login(data.token);
-        navigate("/");
+        navigate("/profile/edit");
       } else {
         console.error("Registration failed:", response.status);
         const errorData = await response.json();
