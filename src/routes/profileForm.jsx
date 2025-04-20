@@ -24,6 +24,10 @@ export default function Register() {
       setBio(data.profile.bio || "");
       setLocation(data.profile.location || "");
       setWebsite(data.profile.website || "");
+      setAvatarFile(data.profile.avatar);
+      if (data.profile.avatar) {
+        setAvatarPreview(`http://localhost:8080/${data.profile.avatar}`);
+      }
     };
     fetchProfile();
   }, []);

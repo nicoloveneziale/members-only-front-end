@@ -4,11 +4,16 @@ import { useMessages } from "../context/MessageContext";
 import { timeAgo } from "../utils/timeAgo";
 import { FaHeart, FaRegHeart, FaTrash } from "react-icons/fa";
 
-export default function Message({ message, user, onDelete }) {
+export default function Message({ message, user, onDelete = null }) {
   const { token } = useAuth();
   const { deleteMessage } = useMessages();
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(message._count?.likedBy || 0);
+
+  function handleDelete() {
+    if (onDelete) onDelete(message.id);
+    deleteMessage(message.id, user);
+  }
 
   useEffect(() => {
     if (!token) return;
@@ -105,7 +110,7 @@ export default function Message({ message, user, onDelete }) {
 
             {user.id === message.author_id && (
               <button
-                onClick={() => deleteMessage(message.id, user)}
+                onClick={handleDelete}
                 className="flex items-center text-red-600 hover:text-red-700 focus:outline-none transition-colors duration-200"
               >
                 <FaTrash className="mr-2" />

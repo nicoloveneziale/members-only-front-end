@@ -13,6 +13,7 @@ import Register from "./routes/registerPage";
 import Join from "./routes/joinPage";
 import MessageForm from "./routes/messageForm";
 import ProfileForm from "./routes/profileForm";
+import Profile from "./routes/profilePage";
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
       {
         path: "profile/edit",
         element: <ProfileForm />,
+      },
+      {
+        path: "profile/:id",
+        element: <Profile />,
       },
     ],
   },
