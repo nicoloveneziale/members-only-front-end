@@ -10,6 +10,7 @@ export default function Message({ message, user, onDelete = null }) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(message._count?.likedBy || 0);
   const isOwner = user?.id === message.users.id;
+  const canSeeDetails = user?.membership_status;
 
   function handleDelete() {
     if (onDelete) onDelete(message.id);
@@ -59,26 +60,46 @@ export default function Message({ message, user, onDelete = null }) {
   return (
     <div className="bg-white rounded-xl shadow-md p-5 max-w-2xl mx-auto">
       <div className="flex items-center mb-4">
-        <img
-          src={`http://localhost:8080/${message.users.profile?.avatar || "default-avatar.png"}`}
-          alt="avatar"
-          className="w-12 h-12 rounded-full object-cover border-2 border-purple-400"
-        />
-        <div className="ml-3">
-          <div className="flex items-center space-x-2">
-            <a
-              href={`/profile/${message.users.profile?.id}`}
-              className="text-sm font-semibold text-indigo-700 hover:underline"
-            >
-              {message.users.username}
-            </a>
-            {message.users.membership_status && (
-              <span className="text-xs text-green-600 font-semibold">
-                (Member)
-              </span>
-            )}
-          </div>
-          <span className="text-xs text-gray-500">{timeAgo(message.date)}</span>
+        <div className="flex items-center mb-4">
+          {canSeeDetails || isOwner ? (
+            <>
+              <img
+                src={`http://localhost:8080/${message.users.profile?.avatar || "default-avatar.png"}`}
+                alt="avatar"
+                className="w-12 h-12 rounded-full object-cover border-2 border-purple-400"
+              />
+              <div className="ml-3">
+                <div className="flex items-center space-x-2">
+                  <a
+                    href={`/profile/${message.users.profile.id}`}
+                    className="text-sm font-semibold text-indigo-700 hover:underline"
+                  >
+                    {message.users.username}
+                  </a>
+                  {message.users.membership_status && (
+                    <span className="text-xs text-green-600 font-semibold">
+                      (Member)
+                    </span>
+                  )}
+                </div>
+                <span className="text-xs text-gray-500">
+                  {timeAgo(message.date)}
+                </span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="w-12 h-12 rounded-full bg-gray-300 animate-pulse blur-sm" />
+              <div className="ml-3">
+                <div className="text-sm font-semibold text-gray-400 blur-sm">
+                  Hidden Member
+                </div>
+                <div className="text-xs text-gray-400 blur-sm">
+                  Become a member to view details
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

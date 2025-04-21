@@ -7,6 +7,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
+  const [errors, setErrors] = useState([]);
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -30,15 +31,25 @@ export default function Register() {
       } else {
         console.error("Registration failed:", response.status);
         const errorData = await response.json();
-        alert(
-          errorData?.message ||
-            "Registration failed. Please check your details.",
-        );
+        if (errorData.errors) {
+          setErrors(errorData.errors);
+        } else {
+          alert(
+            errorData?.message ||
+              "Registration failed. Please check your details.",
+          );
+        }
+        console.log(errors);
       }
     } catch (error) {
       console.error("Registration error:", error);
       alert("An unexpected error occurred during registration.");
     }
+  };
+
+  const getFieldError = (field) => {
+    const error = errors.find((err) => err.path === field);
+    return error?.msg;
   };
 
   return (
@@ -66,6 +77,11 @@ export default function Register() {
                 onChange={(e) => setUsername(e.target.value)}
                 required
               />
+              {getFieldError("username") && (
+                <p className="text-sm text-red-500 mt-1">
+                  {getFieldError("username")}
+                </p>
+              )}
             </div>
             <div>
               <label
@@ -84,6 +100,11 @@ export default function Register() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              {getFieldError("password") && (
+                <p className="text-sm text-red-500 mt-1">
+                  {getFieldError("password")}
+                </p>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -103,6 +124,11 @@ export default function Register() {
                   onChange={(e) => setFirstname(e.target.value)}
                   required
                 />
+                {getFieldError("firstname") && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {getFieldError("firstname")}
+                  </p>
+                )}
               </div>
               <div>
                 <label
@@ -121,6 +147,11 @@ export default function Register() {
                   onChange={(e) => setLastname(e.target.value)}
                   required
                 />
+                {getFieldError("lastname") && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {getFieldError("lastname")}
+                  </p>
+                )}
               </div>
             </div>
             <button

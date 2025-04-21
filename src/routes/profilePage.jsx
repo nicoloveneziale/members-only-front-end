@@ -51,9 +51,8 @@ export default function Profile() {
       console.log(profile.user.messages);
       setMessages(profile.user?.messages || []);
       setAvatar(profile.avatar);
-      if (profile.avatar) {
-        setAvatarPreview(`http://localhost:8080/${profile.avatar}`);
-      }
+
+      setAvatarPreview(`http://localhost:8080/${profile.avatar}`);
     };
     fetchProfile();
   }, [id, token]);

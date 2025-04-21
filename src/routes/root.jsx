@@ -15,8 +15,9 @@ import {
 
 export default function Root() {
   const { token, logout } = useAuth();
-  const { messages, fetchMessages, deleteMessage, loading } = useMessages();
+  const { messages, fetchMessages, loading } = useMessages();
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [sortBy, setSortBy] = useState("new");
   const location = useLocation();
   const navigate = useNavigate();
@@ -43,6 +44,15 @@ export default function Root() {
 
         const data = await response.json();
         setUser(data.user);
+
+        const profile = await fetch(
+          `http://localhost:8080/api/profile/${data.user.id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+        const profileData = await profile.json();
+        setProfile(profileData.profile);
       } catch (error) {
         console.error("Error fetching user data:", error);
         setUser(null);
@@ -78,6 +88,17 @@ export default function Root() {
                   </span>
                   !
                 </span>
+
+                {profile && (
+                  <Link
+                    to={`/profile/${profile.id}`}
+                    className="flex items-center bg-white border border-purple-500 text-purple-600 hover:bg-purple-50 font-semibold py-2 px-3 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  >
+                    <FaUserPlus className="mr-2" />
+                    My Profile
+                  </Link>
+                )}
+
                 <button
                   onClick={handleLogout}
                   className="flex items-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-3 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400"
@@ -85,6 +106,7 @@ export default function Root() {
                   <FaSignOutAlt className="mr-2" />
                   Log Out
                 </button>
+
                 {!user.membership_status && (
                   <Link
                     to="/join"
@@ -94,6 +116,7 @@ export default function Root() {
                     Join
                   </Link>
                 )}
+
                 <Link
                   to="/messages/create"
                   className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-3 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -139,9 +162,16 @@ export default function Root() {
                 <option value="most liked">Most Liked</option>
               </select>
             </div>
-            {messages.map((message) => (
-              <Message key={message.id} message={message} user={user} />
-            ))}
+
+            {loading ? (
+              <div className="flex justify-center py-10">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-purple-500 border-opacity-75"></div>
+              </div>
+            ) : (
+              messages.map((message) => (
+                <Message key={message.id} message={message} user={user} />
+              ))
+            )}
           </div>
         ) : (
           <div className="bg-white bg-opacity-80 backdrop-blur-sm rounded-lg shadow-md p-6">
