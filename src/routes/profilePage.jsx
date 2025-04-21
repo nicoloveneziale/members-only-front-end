@@ -9,6 +9,7 @@ export default function Profile() {
   const [user, setUser] = useState(null);
   const [location, setLocation] = useState("");
   const [website, setWebsite] = useState("");
+  const [avatar, setAvatar] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [messages, setMessages] = useState([]);
 
@@ -43,13 +44,13 @@ export default function Profile() {
 
       const data = await response.json();
       const profile = data.profile;
-
       setBio(profile.bio || "");
       setLocation(profile.location || "");
       setWebsite(profile.website || "");
       setUsername(profile.user?.username || "Unknown User");
+      console.log(profile.user.messages);
       setMessages(profile.user?.messages || []);
-
+      setAvatar(profile.avatar);
       if (profile.avatar) {
         setAvatarPreview(`http://localhost:8080/${profile.avatar}`);
       }

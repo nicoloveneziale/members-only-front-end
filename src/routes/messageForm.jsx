@@ -31,6 +31,24 @@ export default function MessageForm() {
       });
       if (response.ok) {
         const newMessage = (await response.json()).data;
+
+        console.log(newMessage);
+
+        const profile = await fetch(
+          `http://localhost:8080/api/profile/${newMessage.users.id}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+        console.log(profile);
+
+        newMessage.users.profile = (await profile.json()).profile;
+
+        console.log(newMessage);
+
         addMessage(newMessage);
         navigate("/");
       }

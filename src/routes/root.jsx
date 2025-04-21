@@ -31,11 +31,25 @@ export default function Root() {
       setUser(null);
       return;
     }
-    fetch("http://localhost:8080/api/me", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => setUser(data.user));
+    const fetchUser = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setUser(data.user);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setUser(null);
+      }
+    };
+
+    fetchUser();
   }, [token]);
 
   // Log Out

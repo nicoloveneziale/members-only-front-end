@@ -9,6 +9,7 @@ export default function Message({ message, user, onDelete = null }) {
   const { deleteMessage } = useMessages();
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(message._count?.likedBy || 0);
+  const isOwner = user?.id === message.users.id;
 
   function handleDelete() {
     if (onDelete) onDelete(message.id);
@@ -56,70 +57,69 @@ export default function Message({ message, user, onDelete = null }) {
   };
 
   return (
-    <div
-      key={message.id}
-      className="bg-white rounded-lg shadow-md overflow-hidden"
-    >
-      <div className="p-6">
-        <h3 className="text-xl font-semibold text-gray-800 line-clamp-2">
-          {message.title}
-        </h3>
-        <p className="mt-2 text-gray-700 line-clamp-3">{message.text}</p>
+    <div className="bg-white rounded-xl shadow-md p-5 max-w-2xl mx-auto">
+      <div className="flex items-center mb-4">
+        <img
+          src={`http://localhost:8080/${message.users.profile?.avatar || "default-avatar.png"}`}
+          alt="avatar"
+          className="w-12 h-12 rounded-full object-cover border-2 border-purple-400"
+        />
+        <div className="ml-3">
+          <div className="flex items-center space-x-2">
+            <a
+              href={`/profile/${message.users.profile?.id}`}
+              className="text-sm font-semibold text-indigo-700 hover:underline"
+            >
+              {message.users.username}
+            </a>
+            {message.users.membership_status && (
+              <span className="text-xs text-green-600 font-semibold">
+                (Member)
+              </span>
+            )}
+          </div>
+          <span className="text-xs text-gray-500">{timeAgo(message.date)}</span>
+        </div>
+      </div>
+
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold text-gray-800">{message.title}</h3>
+        <p className="text-gray-700 mt-1">{message.text}</p>
         {message.image && (
           <div className="mt-4">
             <img
               src={`http://localhost:8080/${message.image}`}
-              alt="Message"
-              className="max-w-full h-auto rounded-md shadow-md"
+              alt="message"
+              className="w-full max-h-[500px] rounded-lg border object-cover"
             />
           </div>
         )}
-        {user?.membership_status && (
-          <div className="mt-4 flex items-center justify-between">
-            <div className="text-sm text-gray-500">
-              <span>{timeAgo(message.date)}</span>
-              <span className="ml-2">
-                Posted by{" "}
-                <span className="font-medium text-indigo-600">
-                  {message.users.username}
-                </span>
-                <span className="text-green-500 font-semibold ml-1">
-                  (Member)
-                </span>
-              </span>
-            </div>
-          </div>
-        )}
-
-        {user && (
-          <div className="mt-4 flex justify-between items-center">
-            <button
-              onClick={handleLike}
-              className={`flex items-center text-red-500 hover:text-red-600 focus:outline-none transition-colors duration-200 ${
-                liked ? "font-semibold" : ""
-              }`}
-            >
-              {liked ? (
-                <FaHeart className="mr-2" />
-              ) : (
-                <FaRegHeart className="mr-2" />
-              )}
-              <span>{liked ? "Unlike" : "Like"}</span>
-              <span className="ml-1 text-gray-600">({likeCount})</span>
-            </button>
-
-            {user.id === message.author_id && (
-              <button
-                onClick={handleDelete}
-                className="flex items-center text-red-600 hover:text-red-700 focus:outline-none transition-colors duration-200"
-              >
-                <FaTrash className="mr-2" />
-                <span>Delete</span>
-              </button>
-            )}
-          </div>
-        )}
       </div>
+
+      {user && (
+        <div className="flex justify-between items-center mt-4 border-t pt-3">
+          <button
+            onClick={handleLike}
+            className={`flex items-center gap-1 text-red-500 hover:text-red-600 transition-colors duration-200 ${
+              liked ? "font-semibold" : ""
+            }`}
+          >
+            {liked ? <FaHeart /> : <FaRegHeart />}
+            <span>{liked ? "Unlike" : "Like"}</span>
+            <span className="text-gray-600">({likeCount})</span>
+          </button>
+
+          {isOwner && (
+            <button
+              onClick={handleDelete}
+              className="flex items-center gap-1 text-red-600 hover:text-red-700 transition-colors duration-200"
+            >
+              <FaTrash />
+              <span>Delete</span>
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
