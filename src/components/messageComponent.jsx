@@ -64,7 +64,7 @@ export default function Message({ message, user, onDelete = null }) {
           {canSeeDetails || isOwner ? (
             <>
               <img
-                src={`http://localhost:8080/${message.users.profile?.avatar || "default-avatar.png"}`}
+                src={`${message.users.profile?.avatar || "default-avatar.png"}`}
                 alt="avatar"
                 className="w-12 h-12 rounded-full object-cover border-2 border-purple-400"
               />
@@ -109,7 +109,7 @@ export default function Message({ message, user, onDelete = null }) {
         {message.image && (
           <div className="mt-4">
             <img
-              src={`http://localhost:8080/${message.image}`}
+              src={message.image}
               alt="message"
               className="w-full max-h-[500px] rounded-lg border object-cover"
             />

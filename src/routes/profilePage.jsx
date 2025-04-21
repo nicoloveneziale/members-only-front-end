@@ -23,7 +23,6 @@ export default function Profile() {
   }
 
   useEffect(() => {
-    console.log(token);
     const fetchUser = async () => {
       await fetch("http://localhost:8080/api/me", {
         headers: { Authorization: `Bearer ${token}` },
@@ -48,11 +47,8 @@ export default function Profile() {
       setLocation(profile.location || "");
       setWebsite(profile.website || "");
       setUsername(profile.user?.username || "Unknown User");
-      console.log(profile.user.messages);
       setMessages(profile.user?.messages || []);
       setAvatar(profile.avatar);
-
-      setAvatarPreview(`http://localhost:8080/${profile.avatar}`);
     };
     fetchProfile();
   }, [id, token]);
@@ -62,9 +58,9 @@ export default function Profile() {
       <div className="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-6">
         <div className="flex flex-col items-center mb-6">
           <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-purple-300 shadow">
-            {avatarPreview ? (
+            {avatar ? (
               <img
-                src={avatarPreview}
+                src={avatar}
                 alt="Avatar"
                 className="object-cover w-full h-full"
               />
