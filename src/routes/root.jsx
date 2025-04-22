@@ -28,15 +28,19 @@ export default function Root() {
 
   // Fetch user info
   useEffect(() => {
+    console.log(token);
     if (!token) {
       setUser(null);
       return;
     }
     const fetchUser = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await fetch(
+          "https://members-only-production-3673.up.railway.app/api/me",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -46,7 +50,7 @@ export default function Root() {
         setUser(data.user);
 
         const profile = await fetch(
-          `http://localhost:8080/api/profile/${data.user.id}`,
+          `https://members-only-production-3673.up.railway.app/api/profile/${data.user.id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },

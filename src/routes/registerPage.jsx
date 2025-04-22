@@ -15,13 +15,16 @@ export default function Register() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://members-only-production-3673.up.railway.app/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password, firstname, lastname }),
         },
-        body: JSON.stringify({ username, password, firstname, lastname }),
-      });
+      );
 
       if (response.ok) {
         const data = await response.json();

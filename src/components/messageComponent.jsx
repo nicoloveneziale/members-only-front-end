@@ -36,7 +36,7 @@ export default function Message({ message, user, onDelete = null }) {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/messages/${message.id}/like`,
+        `https://members-only-production-3673.up.railway.app/messages/${message.id}/like`,
         {
           method: "POST",
           headers: {

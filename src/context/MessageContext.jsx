@@ -11,7 +11,9 @@ export function MessageProvider({ children }) {
   const fetchMessages = async (sortBy = "new") => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:8080/messages/${sortBy}`);
+      const res = await fetch(
+        `https://members-only-production-3673.up.railway.app/messages/${sortBy}`,
+      );
       const data = await res.json();
       setMessages(data);
     } catch (error) {
@@ -23,15 +25,18 @@ export function MessageProvider({ children }) {
 
   const deleteMessage = async (id, user) => {
     try {
-      const response = await fetch(`http://localhost:8080/messages/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `https://members-only-production-3673.up.railway.app/messages/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: {
+            user: user,
+          },
         },
-        body: {
-          user: user,
-        },
-      });
+      );
 
       if (response.ok) {
         setMessages(messages.filter((message) => message.id !== id));

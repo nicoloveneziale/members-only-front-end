@@ -22,13 +22,16 @@ export default function MessageForm() {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/messages/create", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        "https://members-only-production-3673.up.railway.app/messages/create",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
         },
-        body: formData,
-      });
+      );
       if (response.ok) {
         const newMessage = (await response.json()).data;
 

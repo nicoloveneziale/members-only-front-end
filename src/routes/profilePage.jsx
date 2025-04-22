@@ -24,9 +24,12 @@ export default function Profile() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      await fetch("http://localhost:8080/api/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      await fetch(
+        "https://members-only-production-3673.up.railway.app/api/me",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      )
         .then((res) => res.json())
         .then((data) => setUser(data.user));
     };
@@ -35,11 +38,14 @@ export default function Profile() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const response = await fetch(`http://localhost:8080/profile/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `https://members-only-production-3673.up.railway.app/profile/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       const data = await response.json();
       const profile = data.profile;

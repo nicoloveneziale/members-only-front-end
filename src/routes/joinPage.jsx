@@ -11,14 +11,17 @@ export default function Join() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/join", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        "https://members-only-production-3673.up.railway.app/join",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ passcode }),
         },
-        body: JSON.stringify({ passcode }),
-      });
+      );
 
       if (response.ok) {
         const data = await response.json();

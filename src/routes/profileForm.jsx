@@ -14,11 +14,14 @@ export default function Register() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const response = await fetch("http://localhost:8080/profile/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        "https://members-only-production-3673.up.railway.app/profile/me",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       const data = await response.json();
       setBio(data.profile.bio || "");
@@ -26,7 +29,9 @@ export default function Register() {
       setWebsite(data.profile.website || "");
       setAvatarFile(data.profile.avatar);
       if (data.profile.avatar) {
-        setAvatarPreview(`http://localhost:8080/${data.profile.avatar}`);
+        setAvatarPreview(
+          `https://members-only-production-3673.up.railway.app/${data.profile.avatar}`,
+        );
       }
     };
     fetchProfile();
