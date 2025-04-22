@@ -1,16 +1,22 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Link } from "react-router-dom";
+import { PuffLoader } from "react-spinners";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isLoading) {
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
       const response = await fetch("http://localhost:8080/login", {
@@ -33,6 +39,8 @@ export default function Login() {
     } catch (error) {
       console.error("Login error:", error);
       alert("An error occurred during login.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -60,6 +68,7 @@ export default function Login() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
             <div>
@@ -78,13 +87,17 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
             <button
               type="submit"
-              className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-md focus:outline-none focus:shadow-outline w-full transition duration-300 ease-in-out"
+              className={`bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-md focus:outline-none focus:shadow-outline w-full transition duration-300 ease-in-out ${
+                isLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={isLoading}
             >
-              Log In
+              {isLoading ? <PuffLoader color="#fff" size={20} /> : "Log In"}
             </button>
           </form>
           <div className="mt-6 text-center">

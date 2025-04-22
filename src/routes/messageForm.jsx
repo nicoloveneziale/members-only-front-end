@@ -2,17 +2,24 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useMessages } from "../context/MessageContext";
 import { useNavigate } from "react-router-dom";
+import { PuffLoader } from "react-spinners";
 
 export default function MessageForm() {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const { addMessage } = useMessages();
   const { token } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isLoading) {
+      return;
+    }
+
+    setIsLoading(true);
 
     const formData = new FormData();
     formData.append("title", title);
@@ -54,10 +61,14 @@ export default function MessageForm() {
 
         addMessage(newMessage);
         navigate("/");
+      } else {
+        alert("Failed to create message. Please try again.");
       }
     } catch (error) {
       console.error("Error creating message:", error);
       alert("Failed to create message. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -85,6 +96,7 @@ export default function MessageForm() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
             <div>
@@ -103,6 +115,7 @@ export default function MessageForm() {
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 required
+                disabled={isLoading}
               ></textarea>
             </div>
             <div>
@@ -119,13 +132,21 @@ export default function MessageForm() {
                 accept="image/*"
                 className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                 onChange={(e) => setImage(e.target.files[0])}
+                disabled={isLoading}
               />
             </div>
             <button
               type="submit"
-              className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-md focus:outline-none focus:shadow-outline w-full transition duration-300 ease-in-out"
+              className={`bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-md focus:outline-none focus:shadow-outline w-full transition duration-300 ease-in-out ${
+                isLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={isLoading}
             >
-              Post Message
+              {isLoading ? (
+                <PuffLoader color="#fff" size={20} />
+              ) : (
+                "Post Message"
+              )}
             </button>
           </form>
         </div>

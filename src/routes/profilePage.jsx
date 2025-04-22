@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Message from "../components/messageComponent";
 import { useAuth } from "../context/AuthContext";
+import { PuffLoader } from "react-spinners";
 
 export default function Profile() {
   const [username, setUsername] = useState("");
@@ -10,8 +11,9 @@ export default function Profile() {
   const [location, setLocation] = useState("");
   const [website, setWebsite] = useState("");
   const [avatar, setAvatar] = useState(null);
-  const [avatarPreview, setAvatarPreview] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [userLoading, setUserLoading] = useState(true);
 
   const { id } = useParams();
   const { token } = useAuth();
@@ -24,40 +26,62 @@ export default function Profile() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      await fetch(
-        "https://members-only-production-3673.up.railway.app/api/me",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      )
-        .then((res) => res.json())
-        .then((data) => setUser(data.user));
+      setUserLoading(true);
+      try {
+        const res = await fetch(
+          "https://members-only-production-3673.up.railway.app/api/me",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+        const data = await res.json();
+        setUser(data.user);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      } finally {
+        setUserLoading(false);
+      }
     };
     fetchUser();
   }, [token]);
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const response = await fetch(
-        `https://members-only-production-3673.up.railway.app/profile/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `https://members-only-production-3673.up.railway.app/profile/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        },
-      );
+        );
 
-      const data = await response.json();
-      const profile = data.profile;
-      setBio(profile.bio || "");
-      setLocation(profile.location || "");
-      setWebsite(profile.website || "");
-      setUsername(profile.user?.username || "Unknown User");
-      setMessages(profile.user?.messages || []);
-      setAvatar(profile.avatar);
+        const data = await response.json();
+        const profile = data.profile;
+        setBio(profile.bio || "");
+        setLocation(profile.location || "");
+        setWebsite(profile.website || "");
+        setUsername(profile.user?.username || "Unknown User");
+        setMessages(profile.user?.messages || []);
+        setAvatar(profile.avatar);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchProfile();
   }, [id, token]);
+
+  if (loading || userLoading) {
+    return (
+      <div className="bg-gray-100 min-h-screen py-10 px-4 flex items-center justify-center">
+        <PuffLoader color="#6D28D9" size={60} />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-100 min-h-screen py-10 px-4">

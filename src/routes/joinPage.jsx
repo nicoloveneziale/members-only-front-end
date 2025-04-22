@@ -1,14 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { PuffLoader } from "react-spinners";
 
 export default function Join() {
   const [passcode, setPasscode] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { token, login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isLoading) {
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
       const response = await fetch(
@@ -35,6 +42,8 @@ export default function Join() {
     } catch (error) {
       console.error("Join error:", error);
       alert("An unexpected error occurred while trying to join.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -62,13 +71,17 @@ export default function Join() {
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
             <button
               type="submit"
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-md focus:outline-none focus:shadow-outline w-full transition duration-300 ease-in-out"
+              className={`bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-md focus:outline-none focus:shadow-outline w-full transition duration-300 ease-in-out ${
+                isLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={isLoading}
             >
-              Join Club
+              {isLoading ? <PuffLoader color="#fff" size={20} /> : "Join Club"}
             </button>
           </form>
           <div className="mt-6 text-center">

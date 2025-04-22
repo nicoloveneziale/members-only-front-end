@@ -12,13 +12,15 @@ import {
   FaUserPlus,
   FaGlobe,
 } from "react-icons/fa";
+import { PuffLoader } from "react-spinners";
 
 export default function Root() {
   const { token, logout } = useAuth();
-  const { messages, fetchMessages, loading } = useMessages();
+  const { messages, fetchMessages, loading: messagesLoading } = useMessages();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [sortBy, setSortBy] = useState("new");
+  const [userLoading, setUserLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -30,9 +32,11 @@ export default function Root() {
   useEffect(() => {
     if (!token) {
       setUser(null);
+      setUserLoading(false);
       return;
     }
     const fetchUser = async () => {
+      setUserLoading(true);
       try {
         const response = await fetch(
           "https://members-only-production-3673.up.railway.app/api/me",
@@ -48,17 +52,19 @@ export default function Root() {
         const data = await response.json();
         setUser(data.user);
 
-        const profile = await fetch(
+        const profileResponse = await fetch(
           `https://members-only-production-3673.up.railway.app/api/profile/${data.user.id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
         );
-        const profileData = await profile.json();
+        const profileData = await profileResponse.json();
         setProfile(profileData.profile);
       } catch (error) {
         console.error("Error fetching user data:", error);
         setUser(null);
+      } finally {
+        setUserLoading(false);
       }
     };
 
@@ -71,6 +77,14 @@ export default function Root() {
     navigate("/");
   };
 
+  if (location.pathname === "/" && messagesLoading) {
+    return (
+      <div className="bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 min-h-screen font-sans text-gray-900 flex items-center justify-center">
+        <PuffLoader color="#6D28D9" size={60} />
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 min-h-screen font-sans text-gray-900 flex flex-col">
       <header className="bg-white bg-opacity-95 backdrop-blur-md shadow-lg sticky top-0 z-50">
@@ -82,7 +96,13 @@ export default function Root() {
             </span>
           </Link>
           <nav className="flex items-center space-x-4">
-            {user ? (
+            {userLoading ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-gray-700 font-medium">
+                  Loading user...
+                </span>
+              </div>
+            ) : user ? (
               <div className="flex items-center space-x-4">
                 <span className="text-gray-700 font-medium">
                   👋 Hi,{" "}
@@ -166,9 +186,9 @@ export default function Root() {
               </select>
             </div>
 
-            {loading ? (
+            {messagesLoading ? (
               <div className="flex justify-center py-10">
-                <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-purple-500 border-opacity-75"></div>
+                <PuffLoader color="#6D28D9" size={60} />
               </div>
             ) : (
               messages.map((message) => (

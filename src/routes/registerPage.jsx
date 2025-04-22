@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { PuffLoader } from "react-spinners";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -8,18 +9,18 @@ export default function Register() {
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [errors, setErrors] = useState([]);
-  const [isLoading, setIsLoading] = useState(false); // State for loading
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isLoading) {
-      return; // Prevent multiple submissions while loading
+      return;
     }
 
-    setIsLoading(true); // Set loading to true when the request starts
-    setErrors([]); // Clear previous errors
+    setIsLoading(true);
+    setErrors([]);
 
     try {
       const response = await fetch(
@@ -55,7 +56,7 @@ export default function Register() {
       console.error("Registration error:", error);
       alert("An unexpected error occurred during registration.");
     } finally {
-      setIsLoading(false); // Set loading back to false when the request finishes (success or error)
+      setIsLoading(false);
     }
   };
 
@@ -88,7 +89,7 @@ export default function Register() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                disabled={isLoading} // Disable input while loading
+                disabled={isLoading}
               />
               {getFieldError("username") && (
                 <p className="text-sm text-red-500 mt-1">
@@ -112,7 +113,7 @@ export default function Register() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                disabled={isLoading} // Disable input while loading
+                disabled={isLoading}
               />
               {getFieldError("password") && (
                 <p className="text-sm text-red-500 mt-1">
@@ -137,7 +138,7 @@ export default function Register() {
                   value={firstname}
                   onChange={(e) => setFirstname(e.target.value)}
                   required
-                  disabled={isLoading} // Disable input while loading
+                  disabled={isLoading}
                 />
                 {getFieldError("firstname") && (
                   <p className="text-sm text-red-500 mt-1">
@@ -161,7 +162,7 @@ export default function Register() {
                   value={lastname}
                   onChange={(e) => setLastname(e.target.value)}
                   required
-                  disabled={isLoading} // Disable input while loading
+                  disabled={isLoading}
                 />
                 {getFieldError("lastname") && (
                   <p className="text-sm text-red-500 mt-1">
@@ -175,9 +176,9 @@ export default function Register() {
               className={`bg-purple-500 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-md focus:outline-none focus:shadow-outline w-full transition duration-300 ease-in-out ${
                 isLoading ? "opacity-50 cursor-not-allowed" : ""
               }`}
-              disabled={isLoading} // Disable the button while loading
+              disabled={isLoading}
             >
-              {isLoading ? "Registering..." : "Register"}
+              {isLoading ? <PuffLoader color="#fff" size={20} /> : "Register"}
             </button>
           </form>
           <div className="mt-6 text-center">

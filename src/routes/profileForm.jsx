@@ -1,46 +1,52 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { PuffLoader } from "react-spinners";
 
-export default function Register() {
+export default function ProfileForm() {
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
   const [website, setWebsite] = useState("");
   const [avatarFile, setAvatarFile] = useState(null);
-  const [avatarPreview, setAvatarPreview] = useState(null);
-
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { token } = useAuth();
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const response = await fetch(
-        "https://members-only-production-3673.up.railway.app/profile/me",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+      try {
+        const response = await fetch(
+          "https://members-only-production-3673.up.railway.app/profile/me",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        },
-      );
-
-      const data = await response.json();
-      setBio(data.profile.bio || "");
-      setLocation(data.profile.location || "");
-      setWebsite(data.profile.website || "");
-      setAvatarFile(data.profile.avatar);
-      if (data.profile.avatar) {
-        setAvatarPreview(
-          `https://members-only-production-3673.up.railway.app/${data.profile.avatar}`,
         );
+
+        if (response.ok) {
+          const data = await response.json();
+          setBio(data.profile.bio || "");
+          setLocation(data.profile.location || "");
+          setWebsite(data.profile.website || "");
+          setAvatarFile(data.profile.avatar);
+        } else {
+          console.error("Failed to fetch profile:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
+
     fetchProfile();
-  }, []);
+  }, [token]);
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     setAvatarFile(file);
-    setAvatarPreview(URL.createObjectURL(file));
   };
 
   const handleClear = () => {
@@ -50,6 +56,7 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     const formData = new FormData();
     formData.append("bio", bio);
@@ -60,25 +67,37 @@ export default function Register() {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/profile/edit", {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        "https://members-only-production-3673.up.railway.app/profile/edit",
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
         },
-        body: formData,
-      });
+      );
 
       const data = await response.json();
       if (response.ok) {
-        console.log(response);
         navigate(`/profile/${data.profile.id}`);
       } else {
-        alert(data?.message || "Profile creation failed.");
+        alert(data?.message || "Profile update failed.");
       }
     } catch (error) {
-      alert("An unexpected error occurred.");
+      alert("An unexpected error occurred during profile update.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-12 min-h-screen flex items-center justify-center">
+        <PuffLoader color="#6D28D9" size={60} />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-12 min-h-screen px-4 sm:px-6 lg:px-8">
@@ -89,9 +108,9 @@ export default function Register() {
 
         <div className="flex flex-col items-center mb-6">
           <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-purple-300 shadow">
-            {avatarPreview ? (
+            {avatarFile ? (
               <img
-                src={avatarPreview}
+                src={avatarFile}
                 alt="Avatar Preview"
                 className="object-cover w-full h-full"
               />
@@ -106,12 +125,14 @@ export default function Register() {
             accept="image/*"
             onChange={handleAvatarChange}
             className="mt-3 block text-sm text-gray-600"
+            disabled={isSubmitting}
           />
           {avatarFile && (
             <button
               onClick={handleClear}
               type="button"
               className="mt-2 text-sm text-red-500 hover:underline"
+              disabled={isSubmitting}
             >
               Clear Avatar
             </button>
@@ -129,6 +150,7 @@ export default function Register() {
               onChange={(e) => setBio(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-purple-400"
               placeholder="Tell us about yourself"
+              disabled={isSubmitting}
             />
           </div>
 
@@ -142,6 +164,7 @@ export default function Register() {
               onChange={(e) => setLocation(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-400"
               placeholder="e.g. London, UK"
+              disabled={isSubmitting}
             />
           </div>
 
@@ -155,14 +178,22 @@ export default function Register() {
               onChange={(e) => setWebsite(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-400"
               placeholder="https://yourwebsite.com"
+              disabled={isSubmitting}
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-md transition duration-300"
+            className={`w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-md transition duration-300 ${
+              isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={isSubmitting}
           >
-            Create Profile
+            {isSubmitting ? (
+              <PuffLoader color="#fff" size={20} />
+            ) : (
+              "Create Profile"
+            )}
           </button>
         </form>
       </div>
