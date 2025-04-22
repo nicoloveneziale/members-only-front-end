@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useMessages } from "../context/MessageContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Outlet } from "react-router-dom";
+import MobileNav from "../components/mobileNav";
 import Message from "../components/messageComponent";
 import {
   FaUsers,
@@ -11,6 +12,7 @@ import {
   FaSignInAlt,
   FaUserPlus,
   FaGlobe,
+  FaBars,
 } from "react-icons/fa";
 import { PuffLoader } from "react-spinners";
 
@@ -23,6 +25,16 @@ export default function Root() {
   const [userLoading, setUserLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
+  const [isMobileNavOpen, setMobileNavOpen] = useState(false);
+  const headerRef = useRef(null);
+
+  const toggleMobileNav = () => {
+    setMobileNavOpen(!isMobileNavOpen);
+  };
+
+  const closeMobileNav = () => {
+    setMobileNavOpen(false);
+  };
 
   useEffect(() => {
     fetchMessages(sortBy);
@@ -87,7 +99,10 @@ export default function Root() {
 
   return (
     <div className="bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 min-h-screen font-sans text-gray-900 flex flex-col">
-      <header className="bg-white bg-opacity-95 backdrop-blur-md shadow-lg sticky top-0 z-50">
+      <header
+        ref={headerRef}
+        className="bg-white bg-opacity-95 backdrop-blur-md shadow-lg sticky top-0 z-50"
+      >
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <Link to="/" className="flex items-center">
             <FaGlobe className="w-8 h-8 mr-2 text-purple-600" />
@@ -95,78 +110,87 @@ export default function Root() {
               Members Only
             </span>
           </Link>
-          <nav className="flex items-center space-x-4">
-            {userLoading ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-gray-700 font-medium">
-                  Loading user...
-                </span>
-              </div>
-            ) : user ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-gray-700 font-medium">
-                  👋 Hi,{" "}
-                  <span className="font-bold text-purple-700">
-                    {user.username}
+          <div className="flex items-center">
+            <button
+              onClick={toggleMobileNav}
+              className="md:hidden text-gray-700 hover:text-gray-900 mr-4"
+            >
+              <FaBars className="w-6 h-6" />
+            </button>
+
+            <nav className="hidden md:flex items-center space-x-4">
+              {userLoading ? (
+                <div className="flex items-center space-x-4">
+                  <span className="text-gray-700 font-medium">
+                    Loading user...
                   </span>
-                  !
-                </span>
+                </div>
+              ) : user ? (
+                <div className="flex items-center space-x-4">
+                  <span className="text-gray-700 font-medium">
+                    👋 Hi,{" "}
+                    <span className="font-bold text-purple-700">
+                      {user.username}
+                    </span>
+                    !
+                  </span>
 
-                {profile && (
-                  <Link
-                    to={`/profile/${profile.id}`}
-                    className="flex items-center bg-white border border-purple-500 text-purple-600 hover:bg-purple-50 font-semibold py-2 px-3 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  {profile && (
+                    <Link
+                      to={`/profile/${profile.id}`}
+                      className="flex items-center bg-white border border-purple-500 text-purple-600 hover:bg-purple-50 font-semibold py-2 px-3 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    >
+                      <FaUserPlus className="mr-2" />
+                      My Profile
+                    </Link>
+                  )}
+
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-3 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400"
                   >
-                    <FaUserPlus className="mr-2" />
-                    My Profile
-                  </Link>
-                )}
+                    <FaSignOutAlt className="mr-2" />
+                    Log Out
+                  </button>
 
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-3 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400"
-                >
-                  <FaSignOutAlt className="mr-2" />
-                  Log Out
-                </button>
+                  {!user.membership_status && (
+                    <Link
+                      to="/join"
+                      className="flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-3 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400"
+                    >
+                      <FaUsers className="mr-2" />
+                      Join
+                    </Link>
+                  )}
 
-                {!user.membership_status && (
                   <Link
-                    to="/join"
-                    className="flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-3 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400"
+                    to="/messages/create"
+                    className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-3 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400"
                   >
-                    <FaUsers className="mr-2" />
-                    Join
+                    <FaPlusCircle className="mr-2" />
+                    New Post
                   </Link>
-                )}
-
-                <Link
-                  to="/messages/create"
-                  className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-3 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400"
-                >
-                  <FaPlusCircle className="mr-2" />
-                  New Post
-                </Link>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-4">
-                <Link
-                  to="/login"
-                  className="flex items-center text-indigo-600 hover:text-indigo-800 font-semibold transition duration-200 ease-in-out"
-                >
-                  <FaSignInAlt className="mr-1" />
-                  Log In
-                </Link>
-                <Link
-                  to="/register"
-                  className="flex items-center bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-3 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-400"
-                >
-                  <FaUserPlus className="mr-1" />
-                  Register
-                </Link>
-              </div>
-            )}
-          </nav>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-4">
+                  <Link
+                    to="/login"
+                    className="flex items-center text-indigo-600 hover:text-indigo-800 font-semibold transition duration-200 ease-in-out"
+                  >
+                    <FaSignInAlt className="mr-1" />
+                    Log In
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="flex items-center bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-3 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  >
+                    <FaUserPlus className="mr-1" />
+                    Register
+                  </Link>
+                </div>
+              )}
+            </nav>
+          </div>
         </div>
       </header>
 
@@ -211,6 +235,13 @@ export default function Root() {
           </p>
         </div>
       </footer>
+      <MobileNav
+        isOpen={isMobileNavOpen}
+        onClose={closeMobileNav}
+        user={user}
+        profile={profile}
+        handleLogout={handleLogout}
+      />
     </div>
   );
 }
