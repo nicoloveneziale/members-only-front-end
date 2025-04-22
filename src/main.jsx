@@ -19,42 +19,39 @@ import MessageForm from "./routes/messageForm";
 import ProfileForm from "./routes/profileForm";
 import Profile from "./routes/profilePage";
 
-const router = createBrowserRouter(
-  [
-    {
-      path: "/",
-      element: <Root />,
-      errorElement: <ErrorPage />,
-      children: [
-        {
-          path: "login",
-          element: <Login />,
-        },
-        {
-          path: "register",
-          element: <Register />,
-        },
-        {
-          path: "join",
-          element: <Join />,
-        },
-        {
-          path: "messages/create",
-          element: <MessageForm />,
-        },
-        {
-          path: "profile/edit",
-          element: <ProfileForm />,
-        },
-        {
-          path: "profile/:id",
-          element: <Profile />,
-        },
-      ],
-    },
-  ],
-  { basename: "/members-only-front-end" },
-);
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Root />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "register",
+        element: <Register />,
+      },
+      {
+        path: "join",
+        element: <Join />,
+      },
+      {
+        path: "messages/create",
+        element: <MessageForm />,
+      },
+      {
+        path: "profile/edit",
+        element: <ProfileForm />,
+      },
+      {
+        path: "profile/:id",
+        element: <Profile />,
+      },
+    ],
+  },
+]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
