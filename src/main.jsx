@@ -19,48 +19,49 @@ import MessageForm from "./routes/messageForm";
 import ProfileForm from "./routes/profileForm";
 import Profile from "./routes/profilePage";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Root />,
-    errorElement: <ErrorPage />,
-    children: [
-      {
-        path: "login",
-        element: <Login />,
-      },
-      {
-        path: "register",
-        element: <Register />,
-      },
-      {
-        path: "join",
-        element: <Join />,
-      },
-      {
-        path: "messages/create",
-        element: <MessageForm />,
-      },
-      {
-        path: "profile/edit",
-        element: <ProfileForm />,
-      },
-      {
-        path: "profile/:id",
-        element: <Profile />,
-      },
-    ],
-  },
-]);
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <Root />,
+      errorElement: <ErrorPage />,
+      children: [
+        {
+          path: "login",
+          element: <Login />,
+        },
+        {
+          path: "register",
+          element: <Register />,
+        },
+        {
+          path: "join",
+          element: <Join />,
+        },
+        {
+          path: "messages/create",
+          element: <MessageForm />,
+        },
+        {
+          path: "profile/edit",
+          element: <ProfileForm />,
+        },
+        {
+          path: "profile/:id",
+          element: <Profile />,
+        },
+      ],
+    },
+  ],
+  { basename: "/members-only-front-end" },
+);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <BrowserRouter basename="/members-only-front-end">
-      <AuthProvider>
-        <MessageProvider>
-          <RouterProvider router={router} />
-        </MessageProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <AuthProvider>
+      <MessageProvider>
+        <RouterProvider router={router} />
+      </MessageProvider>
+    </AuthProvider>
   </React.StrictMode>,
 );
