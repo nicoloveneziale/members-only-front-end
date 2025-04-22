@@ -1,6 +1,10 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  BrowserRouter,
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
 import "./index.css";
 import { AuthProvider } from "./context/AuthContext";
 import { MessageProvider } from "./context/MessageContext";
@@ -51,10 +55,12 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <AuthProvider>
-      <MessageProvider>
-        <RouterProvider router={router} />
-      </MessageProvider>
-    </AuthProvider>
+    <BrowserRouter basename="/members-only-front-end">
+      <AuthProvider>
+        <MessageProvider>
+          <RouterProvider router={router} />
+        </MessageProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </React.StrictMode>,
 );
