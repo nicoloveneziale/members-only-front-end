@@ -8,11 +8,18 @@ export default function Register() {
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [errors, setErrors] = useState([]);
+  const [isLoading, setIsLoading] = useState(false); // State for loading
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isLoading) {
+      return; // Prevent multiple submissions while loading
+    }
+
+    setIsLoading(true); // Set loading to true when the request starts
+    setErrors([]); // Clear previous errors
 
     try {
       const response = await fetch(
@@ -47,6 +54,8 @@ export default function Register() {
     } catch (error) {
       console.error("Registration error:", error);
       alert("An unexpected error occurred during registration.");
+    } finally {
+      setIsLoading(false); // Set loading back to false when the request finishes (success or error)
     }
   };
 
@@ -79,6 +88,7 @@ export default function Register() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                disabled={isLoading} // Disable input while loading
               />
               {getFieldError("username") && (
                 <p className="text-sm text-red-500 mt-1">
@@ -102,6 +112,7 @@ export default function Register() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={isLoading} // Disable input while loading
               />
               {getFieldError("password") && (
                 <p className="text-sm text-red-500 mt-1">
@@ -126,6 +137,7 @@ export default function Register() {
                   value={firstname}
                   onChange={(e) => setFirstname(e.target.value)}
                   required
+                  disabled={isLoading} // Disable input while loading
                 />
                 {getFieldError("firstname") && (
                   <p className="text-sm text-red-500 mt-1">
@@ -149,6 +161,7 @@ export default function Register() {
                   value={lastname}
                   onChange={(e) => setLastname(e.target.value)}
                   required
+                  disabled={isLoading} // Disable input while loading
                 />
                 {getFieldError("lastname") && (
                   <p className="text-sm text-red-500 mt-1">
@@ -159,9 +172,12 @@ export default function Register() {
             </div>
             <button
               type="submit"
-              className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-md focus:outline-none focus:shadow-outline w-full transition duration-300 ease-in-out"
+              className={`bg-purple-500 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-md focus:outline-none focus:shadow-outline w-full transition duration-300 ease-in-out ${
+                isLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={isLoading} // Disable the button while loading
             >
-              Register
+              {isLoading ? "Registering..." : "Register"}
             </button>
           </form>
           <div className="mt-6 text-center">

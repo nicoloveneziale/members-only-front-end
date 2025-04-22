@@ -28,7 +28,6 @@ export default function Root() {
 
   // Fetch user info
   useEffect(() => {
-    console.log(token);
     if (!token) {
       setUser(null);
       return;
